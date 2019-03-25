@@ -57,11 +57,15 @@ highlightTheme: "darkula"
 
 ---
 
-# Testing Pyramid
+# Testing Practices
 
 --
 
 ![](resources/pyramid.png )  <!-- .element: class="plain" -->
+
+--
+
+![](resources/honeycomb.png )  <!-- .element: class="plain" -->
 
 ---
 
@@ -71,11 +75,11 @@ highlightTheme: "darkula"
 
 ## The classical
 
-```js
-const sum = require('./sum');
+```ts
+const sum = require('./sum')
 
 test('adds 1 + 2 to equal 3', () => {
-  expect(sum(1, 2)).toBe(3);
+  expect(sum(1, 2)).toBe(3)
 });
 ```
 
@@ -85,7 +89,7 @@ test('adds 1 + 2 to equal 3', () => {
 
 ## The Describe/It pattern 
 
-```js
+```ts
 const sum = require('./sum');
 
 describe('adding 1 + 2 numbers', () => {
@@ -93,11 +97,11 @@ describe('adding 1 + 2 numbers', () => {
     let result
 
     beforeAll(() => {
-        result =  1+2;
+        result = 1 + 2
     });
 
     it('should equal 3', () => {
-        expect(result)).toBe(3);
+        expect(result)).toBe(3)
     })
 });
 ```
@@ -105,11 +109,123 @@ describe('adding 1 + 2 numbers', () => {
 
 ---
 
-# Mocking
+# Mock & Stubs
+
+--
+
+```ts
+interface Extraterrestrial {
+    callHome()
+} 
+
+class ET extends Extraterrestrial {
+    callHome(){
+        call(42)
+    }
+}
+
+class Friends {
+    constructor(alien: Extraterrestrial){
+        super()
+        this.alien = alien
+    }
+
+    letPhone(){
+        this.alien.callHome()
+    }
+}
+```
+
+--
+
+## Do it yourself
+
+- simple stubs, complex spy or mock
+- multiple implementations, no setup
+
+--
+
+## example
+
+```ts
+test('call fails because someone answers', () => {
+    class mockExtraterrestrialFail extends Extraterrestrial {
+        callHome(){
+        }
+    }
+    const result = new Friend(new mockExtraterrestrialFail())
+    expect(result.letPhone()).toEqual()
+});
+
+test('call fails because nobody answers', () => {
+    class mockExtraterrestrialFail extends Extraterrestrial {
+        callHome(){
+            throw("nobody answering")
+        }
+    }
+    const result = new Friend(new mockExtraterrestrialFail())
+    expect(result.letPhone()).toThrow("nobody answering")
+});
+```
+
+--
+
+## Mocking frameworks
+
+- integrated spy, mocks and stubs
+- easy to setup
+- no implementation, multiple setups
+
+--
+
+## example
+
+```ts
+test('call fails because someone answers', () => {
+    const mock = jest.fn<Extraterrestrial>(() => {
+        callHome: jest.fn()
+    })
+    const result = new Friend(new mock())
+    expect(result.letPhone()).toEqual()
+});
+
+test('call fails because nobody answers', () => {
+    const mock = jest.fn<Extraterrestrial>(() => {
+        callHome: jest.fn(() => throw("nobody answering"))
+    })
+    const result = new Friend(new mock())
+    expect(result.letPhone()).toThrow("nobody answering")
+});
+```
 
 ---
 
-# In memory databases
+# The ones we didn't have before
+
+--
+
+## In memory databases
+
+```ts
+var sqlite3 = require('sqlite3').verbose();
+var db = new sqlite3.Database(':memory:');
+
+db.serialize(function() {
+  db.run("CREATE TABLE lorem (info TEXT)");
+
+  var stmt = db.prepare("INSERT INTO lorem VALUES (?)");
+  for (var i = 0; i < 10; i++) {
+      stmt.run("Ipsum " + i);
+  }
+  stmt.finalize();
+
+  db.each("SELECT rowid AS id, info FROM lorem", function(err, row) {
+      console.log(row.id + ": " + row.info);
+  });
+});
+
+db.close();
+```
 
 ---
 
@@ -121,4 +237,4 @@ describe('adding 1 + 2 numbers', () => {
 
 ---
 
-# Mocks over the Whire
+# Mocks over the Wire

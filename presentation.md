@@ -109,6 +109,14 @@ describe('adding 1 + 2 numbers', () => {
 
 ---
 
+Inputs
+
+--
+
+Fakers
+
+---
+
 # Mock & Stubs
 
 --

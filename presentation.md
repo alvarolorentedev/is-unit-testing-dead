@@ -4,9 +4,7 @@ transition: "zoom"
 highlightTheme: "darkula"
 ---
 
-# Is developer testing old?
-
-#### Are testing practices stalled
+## is unit testing dead?
 
 <small>Created by [Alvaro](http://kanekotic.xom) / [@kanekotic](http://twitter.com/kanekotic)</small>
 
@@ -57,15 +55,9 @@ highlightTheme: "darkula"
 
 ---
 
-# Testing Practices
+## how do we expect testing to look like?
 
---
-
-![](resources/pyramid.png )  <!-- .element: class="plain" -->
-
---
-
-![](resources/honeycomb.png )  <!-- .element: class="plain" -->
+![](resources/pyramid.png )  <!-- .element: class="fragment fade-in plain" -->
 
 ---
 
@@ -109,17 +101,50 @@ describe('adding 1 + 2 numbers', () => {
 
 ---
 
-Inputs
+# Inputs
 
 --
 
-Fakers
+## Your brain power
+
+Exactly what you want and expect
+
+```ts
+const sum = require('./sum')
+
+test('1 plus 2 should equal 3', () => {
+    expect(sum(1, 2)).toBe(3)
+})
+
+test('2 plus 2 should equal 4', () => {
+    expect(sum(2, 2)).toBe(4)
+})
+```
+
+--
+
+## Fakers
+
+Not what you want but what you expect
+
+```ts
+const sum = require('./sum')
+const faker = require('fakers')
+
+test('should be the sum of numbers', () => {
+    const n1 = faker.random.number()
+    const n2 = faker.random.number()
+    expect(sum(n1, n2)).toBe(n1+n2)
+})
+```
 
 ---
 
 # Mock & Stubs
 
 --
+
+## example
 
 ```ts
 interface Extraterrestrial {
@@ -246,3 +271,11 @@ db.close();
 ---
 
 # Mocks over the Wire
+
+--
+
+## The testing honeycomb
+
+![](resources/honeycomb.png )  <!-- .element: class="plain" -->
+
+--

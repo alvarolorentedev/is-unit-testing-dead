@@ -1,8 +1,14 @@
-import { add } from "../../src/add";
+import { cost } from "../../src/cost";
 import faker from "faker";
 
-test("adds 1 + 2 to equal 3", () => {
-  const second = faker.random.number();
-  const first = faker.random.number();
-  expect(add(first, second)).toBe(first + second);
+test("if its home apply discount", () => {
+  const distance = faker.random.number(1000);
+  const result = distance * 0.03 * 0.2;
+  expect(cost(distance, true)).toBe(result);
+});
+
+test("if its not home dont apply discount", () => {
+  const distance = faker.random.number(1000);
+  const result = distance * 0.03;
+  expect(cost(distance, false)).toBe(result);
 });

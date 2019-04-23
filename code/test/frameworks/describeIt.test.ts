@@ -1,18 +1,17 @@
-import { add } from "../../src/add";
+import { cost } from "../../src/cost";
 import faker from "faker";
 
-describe("add function", () => {
+describe("cost", () => {
   let result: number;
   let expected: number;
 
   beforeAll(() => {
-    const second = faker.random.number();
-    const first = faker.random.number();
-    expected = first + second;
-    result = add(first, second);
+    const distance = faker.random.number();
+    expected = distance * 0.03 * 0.2;
+    result = cost(distance, true);
   });
 
-  it(`should return addition`, () => {
+  it(`should apply discount`, () => {
     expect(result).toBe(expected);
   });
 });

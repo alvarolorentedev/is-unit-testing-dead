@@ -19,26 +19,90 @@ _In computer programming, unit testing is a software testing method by which ind
 
 ---
 
-### how do we think unit testing to look like?
+### how do we think unit testing looks like?
 
 ![](resources/pyramid.png )  <!-- .element: class="fragment fade-in plain" -->
 
 ---
 
-## Test Definitions
+<!-- .slide: data-background="./resources/alien.jpg" -->
+### Help an alien get back home 
+
+---
+
+### Alien first concern is the cost of is call
+
+0.03/minute, nevertheless if its his home has a discount of 0.2
+ <!-- .element: class="fragment fade-in plain" -->
+
+---
+
+### Test Inputs
+
+--
+
+### Brain power
+
+```ts
+test("if its home apply discount", () => {
+  expect(cost(1000, true)).toBe(6)
+});
+
+test("if its not home dont apply discount", () => {
+  expect(cost(1000, false)).toBe(30)
+});
+```
+<!-- .element style="font-size:0.5em;"-->
+<aside class="notes">
+Exactly what you want and expect</aside>
+
+--
+
+### Is this a good set of inputs?
+```ts
+export function cost(distance: number, isHome: boolean): number {
+  return(isHome ? 6 : 30);
+}
+```
+ <!-- .element: class="fragment fade-in plain" -->
+
+--
+
+### Fakers
+
+```ts
+test("if its home apply discount", () => {
+  const distance = faker.random.number(1000);
+  const result = distance * 0.03 * 0.2;
+  expect(cost(distance, true)).toBe(result);
+});
+
+test("if its not home dont apply discount", () => {
+  const distance = faker.random.number(1000);
+  const result = distance * 0.03;
+  expect(cost(distance, false)).toBe(result);
+});
+```
+<!-- .element style="font-size:0.5em;"-->
+<aside class="notes">
+Not what you want but what you expect</aside>
+
+---
+
+### Test Definitions
 
 --
 
 ### The classical
 
 ```ts
-const sum = require('./sum')
-
-test('adds 1 + 2 to equal 3', () => {
-  expect(sum(1, 2)).toBe(3)
+test("if its home apply discount", () => {
+  const distance = faker.random.number(1000);
+  const result = distance * 0.03 * 0.2;
+  expect(cost(distance, true)).toBe(result);
 });
 ```
-   <!-- .element style="font-size:0.5em;"-->
+<!-- .element style="font-size:0.5em;"-->
 
 <aside class="notes">each tests follows the AAA pattern and more than one assertion is done in each test. What makes it more difficult to understand the specific failure</aside>
 
@@ -47,19 +111,19 @@ test('adds 1 + 2 to equal 3', () => {
 ### The Describe/It pattern 
 
 ```ts
-const sum = require('./sum');
+describe("cost", () => {
+  let result: number;
+  let expected: number;
 
-describe('adding 1 + 2 numbers', () => {
-    
-    let result
+  beforeAll(() => {
+    const distance = faker.random.number();
+    expected = distance * 0.03 * 0.2;
+    result = cost(distance, true);
+  });
 
-    beforeAll(() => {
-        result = 1 + 2
-    });
-
-    it('should equal 3', () => {
-        expect(result)).toBe(3)
-    })
+  it(`should apply discount`, () => {
+    expect(result).toBe(expected);
+  });
 });
 ```
  <!-- .element style="font-size:0.5em;"-->
@@ -67,63 +131,17 @@ describe('adding 1 + 2 numbers', () => {
 
 ---
 
-# Inputs
+### Alien second concern is how to call home
+
+he will ask a friend because he does not have money
+ <!-- .element: class="fragment fade-in plain" -->
 
 --
-
-### Your brain power
-
-```ts
-const sum = require('./sum')
-
-test('1 plus 2 should equal 3', () => {
-    expect(sum(1, 2)).toBe(3)
-})
-
-test('2 plus 2 should equal 4', () => {
-    expect(sum(2, 2)).toBe(4)
-})
-```
-<!-- .element style="font-size:0.5em;"-->
-<aside class="notes">
-Exactly what you want and expect</aside>
-
---
-
-### Fakers
-
-```ts
-const sum = require('./sum')
-const faker = require('fakers')
-
-test('should be the sum of numbers', () => {
-    const n1 = faker.random.number()
-    const n2 = faker.random.number()
-    expect(sum(n1, n2)).toBe(n1+n2)
-})
-```
-<!-- .element style="font-size:0.5em;"-->
-<aside class="notes">
-Not what you want but what you expect</aside>
-
----
-
-# Mock & Stubs
-
---
-
-### example
 
 ```ts
 interface Extraterrestrial {
     callHome()
 } 
-
-class ET extends Extraterrestrial {
-    callHome(){
-        call(42)
-    }
-}
 
 class Friends {
     constructor(alien: Extraterrestrial){
@@ -139,28 +157,31 @@ class Friends {
 <!-- .element style="font-size:0.4em;"-->
 <aside class="notes"></aside>
 
+---
+
+### Mock & Stubs
+
 --
 
-## Do it yourself
+### Do it yourself
 
 - simple stubs, complex spy or mock
 - multiple implementations, no setup
 
 --
 
-## example
-
 ```ts
-test('call fails because someone answers', () => {
+describe("alien calls using friend", () => {
+  it("works because someone answers", () => {
     class mockExtraterrestrialFail extends Extraterrestrial {
         callHome(){
         }
     }
     const result = new Friend(new mockExtraterrestrialFail())
     expect(result.letPhone()).toEqual()
-});
+  });
 
-test('call fails because nobody answers', () => {
+  it("fails because nobody answers", () => {
     class mockExtraterrestrialFail extends Extraterrestrial {
         callHome(){
             throw("nobody answering")
@@ -168,6 +189,7 @@ test('call fails because nobody answers', () => {
     }
     const result = new Friend(new mockExtraterrestrialFail())
     expect(result.letPhone()).toThrow("nobody answering")
+  });
 });
 ```
 <!-- .element style="font-size:0.4em;"-->
@@ -175,7 +197,7 @@ test('call fails because nobody answers', () => {
 
 --
 
-## Mocking frameworks
+### Mocking frameworks
 
 - integrated spy, mocks and stubs
 - easy to setup
@@ -184,8 +206,7 @@ test('call fails because nobody answers', () => {
 --
 
 ```ts
-
-describe("et", () => {
+describe("alien calls using friend", () => {
   let mockAlien: any;
 
   beforeAll(async () => {
@@ -194,12 +215,12 @@ describe("et", () => {
     }))();
   });
 
-  it("call fails because someone answers", () => {
+  it("works because someone answers", () => {
     const result = new Friend(mockAlien);
     expect(result.letPhone()).toEqual(undefined);
   });
 
-  it("call fails because nobody answers", () => {
+  it("fails because nobody answers", () => {
     mockAlien.callHome.mockImplementation(() => {
       throw "nobody answering";
     });
@@ -217,7 +238,20 @@ describe("et", () => {
 
 ---
 
-## In memory databases
+### Alien third concern is remembering his home phone
+
+needs to find it in his phonebook
+ <!-- .element: class="fragment fade-in plain" -->
+
+---
+
+### In memory databases
+
+- no need to setup a real database  <!-- .element: class="fragment fade-in plain" -->
+- multiple options depending language  <!-- .element: class="fragment fade-in plain" -->
+- downside, you need to make sure query sintax is compatible <!-- .element: class="fragment fade-in plain" -->
+
+--
 
 ```ts  
 describe("in memory db", () => {
@@ -226,12 +260,11 @@ describe("in memory db", () => {
   beforeAll(async () => {
     db = new sqlite3.Database(":memory:");
     await new Promise((resolve, reject) =>
-      db.run("CREATE TABLE lorem (info TEXT)", () => resolve())
+      db.run("CREATE TABLE phones (name TEXT, phone TEXT)", () => resolve())
     );
-    var stmt = db.prepare("INSERT INTO lorem VALUES (?)");
-    for (var i = 0; i < 10; i++) {
-      stmt.run("Ipsum " + i);
-    }
+    var stmt = db.prepare("INSERT INTO phones VALUES (?,?)");
+    stmt.run("Home","123456");
+    
     await new Promise((resolve, reject) => stmt.finalize(() => resolve()));
   });
 
@@ -242,26 +275,25 @@ describe("in memory db", () => {
   it(`should return exisiting user`, async () => {
     await new Promise((resolve, reject) =>
       db.each(
-        "SELECT rowid AS id, info FROM lorem where id = 1",
+        "SELECT * FROM lorem where name = 'Home'",
         function(_: any, row: any) {
-          expect(row.info).toEqual("Ipsum 0");
+          expect(row.phone).toEqual("123456");
         },
         () => resolve()
       )
     );
   });
 });
-
 ``` 
-<!-- .slide: font-size="0.15em" -->
+<!-- .element style="font-size:0.3em;"-->
 
 ---
 
-# Docker
+### Docker
 
----
+--
 
-# Testcontainers
+### Testcontainers
 
 --
 
@@ -272,7 +304,6 @@ describe("DAL", () => {
   
   beforeAll( async () => {
     container = await new GenericContainer("redis","alpine")
-    .withEnv("KEY", "VALUE")
     .withExposedPorts(6379)
     .start();
     redisClient = redis.createClient(`redis://localhost:${container.getMappedPort(6379)}`);
@@ -292,38 +323,31 @@ describe("DAL", () => {
   });
 });
 ```
-<!-- .element: width="178" height="238" -->
-
---
-
-<pre><code class="hljs" data-line-numbers="4,8-11">
-import React, { useState } from 'react';
- 
-function Example() {
-  const [count, setCount] = useState(0);
- 
-  return (
-    <div>
-      <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
-    </div>
-  );
-}
-</code></pre>
+<!-- .element style="font-size:0.4em;"-->
 
 ---
 
-# Test doubles
+### Alien last concern is will the phone work
 
---
-
-## Mountebank   
+it needs to integrate with other systems
+ <!-- .element: class="fragment fade-in plain" -->
 
 ---
 
-## How testing will look like?
+### Mountebank   
+
+---
+
+### How testing will really look like?
 
 ![](resources/honeycomb.png )   <!-- .element: class="fragment fade-in plain" -->
+
+---
+
+_Unit testing is dead, long live unit testing_
+
+---
+
+![](resources/testcalm.jpg )   <!-- .element: class="plain" -->
+
 

@@ -2,70 +2,34 @@
 theme : "night"
 transition: "zoom"
 highlightTheme: "darkula"
+embedded: true
 ---
 
 ## is unit testing dead?
 
 <small>Created by [Alvaro](http://kanekotic.xom) / [@kanekotic](http://twitter.com/kanekotic)</small>
 
----
-
-# History 
-
---
-
-<!-- .slide: data-background="./resources/50s.jpg" -->
-
- # till 1956
-
-<aside class="notes">Until 1956 it was the debugging oriented period, where testing was often associated to debugging: there was no clear difference between testing and debugging.</aside>
-
---
-
-<!-- .slide: data-background="./resources/60s.jpg" -->
-
- # 1957-1978
-
-<aside class="notes">From 1957-1978 there was the demonstration oriented period where debugging and testing was distinguished now - in this period it was shown, that software satisfies the requirements.
-</aside>
-
---
-
-<!-- .slide: data-background="./resources/70s.jpg" -->
-
- # 1979-1982
-
-<aside class="notes">The time between 1979-1982 is announced as the destruction oriented period, where the goal was to find errors.</aside>
-
---
-
-<!-- .slide: data-background="./resources/80s.jpg" -->
-
- # 1983-1987
-
-<aside class="notes">1983-1987 is classified as the evaluation oriented period: intention here is that during the software lifecycle a product evaluation is provided and measuring quality.</aside>
-
---
-
-<!-- .slide: data-background="./resources/00s.png" -->
-
- # 1988-Now
-
-<aside class="notes">From 1988 on it was seen as prevention oriented period where tests were to demonstrate that software satisfies its specification, to detect faults and to prevent faults.</aside>
 
 ---
 
-## how do we expect testing to look like?
+### what is unit testing?
+
+_In computer programming, unit testing is a software testing method by which individual units of source code, sets of one or more computer program modules together with associated control data, usage procedures, and operating procedures, are tested to determine whether they are fit for use._
+<!-- .element: class="fragment fade-in plain" -->
+
+---
+
+### how do we think unit testing to look like?
 
 ![](resources/pyramid.png )  <!-- .element: class="fragment fade-in plain" -->
 
 ---
 
-# Test Frameworks
+## Test Definitions
 
 --
 
-## The classical
+### The classical
 
 ```ts
 const sum = require('./sum')
@@ -74,12 +38,13 @@ test('adds 1 + 2 to equal 3', () => {
   expect(sum(1, 2)).toBe(3)
 });
 ```
+   <!-- .element style="font-size:0.5em;"-->
 
 <aside class="notes">each tests follows the AAA pattern and more than one assertion is done in each test. What makes it more difficult to understand the specific failure</aside>
 
 --
 
-## The Describe/It pattern 
+### The Describe/It pattern 
 
 ```ts
 const sum = require('./sum');
@@ -97,6 +62,7 @@ describe('adding 1 + 2 numbers', () => {
     })
 });
 ```
+ <!-- .element style="font-size:0.5em;"-->
 <aside class="notes">we can generate multiple levels of definitions to our tests and focus on one assertion at the time, that will allow us to know what is the exact case that makes a functionality fail</aside>
 
 ---
@@ -105,9 +71,7 @@ describe('adding 1 + 2 numbers', () => {
 
 --
 
-## Your brain power
-
-Exactly what you want and expect
+### Your brain power
 
 ```ts
 const sum = require('./sum')
@@ -120,12 +84,13 @@ test('2 plus 2 should equal 4', () => {
     expect(sum(2, 2)).toBe(4)
 })
 ```
+<!-- .element style="font-size:0.5em;"-->
+<aside class="notes">
+Exactly what you want and expect</aside>
 
 --
 
-## Fakers
-
-Not what you want but what you expect
+### Fakers
 
 ```ts
 const sum = require('./sum')
@@ -137,6 +102,9 @@ test('should be the sum of numbers', () => {
     expect(sum(n1, n2)).toBe(n1+n2)
 })
 ```
+<!-- .element style="font-size:0.5em;"-->
+<aside class="notes">
+Not what you want but what you expect</aside>
 
 ---
 
@@ -144,7 +112,7 @@ test('should be the sum of numbers', () => {
 
 --
 
-## example
+### example
 
 ```ts
 interface Extraterrestrial {
@@ -168,6 +136,8 @@ class Friends {
     }
 }
 ```
+<!-- .element style="font-size:0.4em;"-->
+<aside class="notes"></aside>
 
 --
 
@@ -200,6 +170,8 @@ test('call fails because nobody answers', () => {
     expect(result.letPhone()).toThrow("nobody answering")
 });
 ```
+<!-- .element style="font-size:0.4em;"-->
+<aside class="notes"></aside>
 
 --
 
@@ -211,54 +183,77 @@ test('call fails because nobody answers', () => {
 
 --
 
-## example
-
 ```ts
-test('call fails because someone answers', () => {
-    const mock = jest.fn<Extraterrestrial>(() => {
-        callHome: jest.fn()
-    })
-    const result = new Friend(new mock())
-    expect(result.letPhone()).toEqual()
-});
 
-test('call fails because nobody answers', () => {
-    const mock = jest.fn<Extraterrestrial>(() => {
-        callHome: jest.fn(() => throw("nobody answering"))
-    })
-    const result = new Friend(new mock())
-    expect(result.letPhone()).toThrow("nobody answering")
+describe("et", () => {
+  let mockAlien: any;
+
+  beforeAll(async () => {
+    mockAlien = jest.fn(() => ({
+      callHome: jest.fn()
+    }))();
+  });
+
+  it("call fails because someone answers", () => {
+    const result = new Friend(mockAlien);
+    expect(result.letPhone()).toEqual(undefined);
+  });
+
+  it("call fails because nobody answers", () => {
+    mockAlien.callHome.mockImplementation(() => {
+      throw "nobody answering";
+    });
+    const result = new Friend(mockAlien);
+    try {
+      result.letPhone()
+    } catch (error) {
+      expect(error).toEqual("nobody answering");
+    }
+  });
 });
 ```
+<!-- .element style="font-size:0.4em;"-->
+<aside class="notes"></aside>
 
 ---
 
-# The ones we didn't have before
-
---
-
 ## In memory databases
 
-```ts
-var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database(':memory:');
+```ts  
+describe("in memory db", () => {
+  let db: any;
 
-db.serialize(function() {
-  db.run("CREATE TABLE lorem (info TEXT)");
-
-  var stmt = db.prepare("INSERT INTO lorem VALUES (?)");
-  for (var i = 0; i < 10; i++) {
+  beforeAll(async () => {
+    db = new sqlite3.Database(":memory:");
+    await new Promise((resolve, reject) =>
+      db.run("CREATE TABLE lorem (info TEXT)", () => resolve())
+    );
+    var stmt = db.prepare("INSERT INTO lorem VALUES (?)");
+    for (var i = 0; i < 10; i++) {
       stmt.run("Ipsum " + i);
-  }
-  stmt.finalize();
+    }
+    await new Promise((resolve, reject) => stmt.finalize(() => resolve()));
+  });
 
-  db.each("SELECT rowid AS id, info FROM lorem", function(err, row) {
-      console.log(row.id + ": " + row.info);
+  afterAll(async () => {
+    db.close();
+  });
+
+  it(`should return exisiting user`, async () => {
+    await new Promise((resolve, reject) =>
+      db.each(
+        "SELECT rowid AS id, info FROM lorem where id = 1",
+        function(_: any, row: any) {
+          expect(row.info).toEqual("Ipsum 0");
+        },
+        () => resolve()
+      )
+    );
   });
 });
 
-db.close();
-```
+``` 
+<!-- .slide: font-size="0.15em" -->
 
 ---
 
@@ -266,16 +261,69 @@ db.close();
 
 ---
 
-# Test Containers
+# Testcontainers
+
+--
+
+```ts
+describe("DAL", () => {
+  let container
+  let redisClient
+  
+  beforeAll( async () => {
+    container = await new GenericContainer("redis","alpine")
+    .withEnv("KEY", "VALUE")
+    .withExposedPorts(6379)
+    .start();
+    redisClient = redis.createClient(`redis://localhost:${container.getMappedPort(6379)}`);
+    await redisClient.set("pepe", "is awesome");
+  });
+
+  afterAll( async () => {
+    await redisClient.quit();
+    await container.stop();
+  });
+
+  it(`should return exisiting user`, async () => {
+    const dal = new DAL()
+    await dal.connect(`redis://localhost:${container.getMappedPort(6379)}`)
+    const result = await dal.getUser("pepe")
+    expect(result).toEqual("is awesome")
+  });
+});
+```
+<!-- .element: width="178" height="238" -->
+
+--
+
+<pre><code class="hljs" data-line-numbers="4,8-11">
+import React, { useState } from 'react';
+ 
+function Example() {
+  const [count, setCount] = useState(0);
+ 
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+</code></pre>
 
 ---
 
-# Mocks over the Wire
+# Test doubles
 
 --
 
-## The testing honeycomb
+## Mountebank   
 
-![](resources/honeycomb.png )  <!-- .element: class="plain" -->
+---
 
---
+## How testing will look like?
+
+![](resources/honeycomb.png )   <!-- .element: class="fragment fade-in plain" -->
+

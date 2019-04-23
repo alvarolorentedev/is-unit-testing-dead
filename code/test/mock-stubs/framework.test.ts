@@ -1,19 +1,28 @@
-import { Extraterrestrial, Friend } from "../../src/extraterrestial";
+import { Friend } from "../../src/extraterrestial";
 
-test("call fails because someone answers", () => {
-  class mockExtraterrestrialFail implements Extraterrestrial {
-    callHome(): void {}
-  }
-  const friend = new Friend(new mockExtraterrestrialFail());
-  expect(() => friend.letPhone()).not.toThrow();
-});
+describe("et", () => {
+  let mockAlien: any;
 
-test("call fails because nobody answers", () => {
-  class mockExtraterrestrialFail implements Extraterrestrial {
-    callHome(): void {
+  beforeAll(async () => {
+    mockAlien = jest.fn(() => ({
+      callHome: jest.fn()
+    }))();
+  });
+
+  it("call fails because someone answers", () => {
+    const result = new Friend(mockAlien);
+    expect(result.letPhone()).toEqual(undefined);
+  });
+
+  it("call fails because nobody answers", () => {
+    mockAlien.callHome.mockImplementation(() => {
       throw "nobody answering";
+    });
+    const result = new Friend(mockAlien);
+    try {
+      result.letPhone()
+    } catch (error) {
+      expect(error).toEqual("nobody answering");
     }
-  }
-  const friend = new Friend(new mockExtraterrestrialFail());
-  expect(() => friend.letPhone()).toThrow("nobody answering");
+  });
 });

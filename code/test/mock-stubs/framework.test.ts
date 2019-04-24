@@ -20,7 +20,7 @@ describe("et", () => {
     });
     const result = new Friend(mockAlien);
     try {
-      result.letPhone()
+      result.letPhone();
     } catch (error) {
       expect(error).toEqual("nobody answering");
     }

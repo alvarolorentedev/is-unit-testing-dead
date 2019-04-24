@@ -9,8 +9,8 @@ describe("in memory db", () => {
       db.run("CREATE TABLE phones (name TEXT, phone TEXT)", () => resolve())
     );
     var stmt = db.prepare("INSERT INTO phones VALUES (?,?)");
-    stmt.run("Home","123456");
-    
+    stmt.run("Home", "123456");
+
     await new Promise((resolve, reject) => stmt.finalize(() => resolve()));
   });
 

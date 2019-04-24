@@ -1,0 +1,30 @@
+{
+    "imposters": [
+        {
+            "port": 4547,
+            "protocol": "http",
+            "stubs": [
+                {
+                    "responses": [
+                        {
+                            "is": {
+                                "statusCode": 200,
+                                "body": {
+                                    "calling":"alien family"
+                                }
+                            }
+                        }
+                    ],
+                    "predicates": [
+                        {
+                            "exists": {
+                                "method" : "GET",
+                                "path" : "/call/12345"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

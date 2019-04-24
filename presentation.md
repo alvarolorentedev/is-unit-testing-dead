@@ -334,7 +334,70 @@ it needs to integrate with other systems
 
 ---
 
-### Mountebank   
+### Fakes over the wire
+
+--
+
+### Mountebank
+
+- Allows you to fake services your application interacts with  <!-- .element: class="fragment fade-in plain" -->
+- setup can be done manually or recorded  <!-- .element: class="fragment fade-in plain" -->
+
+--
+
+```json
+{
+    "imposters": [
+        {
+            "port": 4547,
+            "protocol": "http",
+            "stubs": [
+                {
+                    "responses": [
+                        {
+                            "is": {
+                                "statusCode": 200,
+                                "body": {
+                                    "calling":"alien family"
+                                }
+                            }
+                        }
+                    ],
+                    "predicates": [
+                        {
+                            "exists": {
+                                "method" : "GET",
+                                "path" : "/call/12345"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+```
+<!-- .element style="font-size:0.3em;"-->
+
+--
+
+```ts
+import { Phone } from "../../src/call";
+
+describe("cost", () => {
+  let phone: Phone;
+
+  beforeAll(() => {
+    phone = new Phone("http://localhost:4547");
+  });
+
+  it(`should apply discount`, async () => {
+    expect(await phone.call(12345)).toEqual({
+      calling: "alien family"
+    });
+  });
+});
+```
 
 ---
 

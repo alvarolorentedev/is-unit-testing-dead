@@ -7,17 +7,18 @@ embedded: true
 
 ## is unit testing dead?
 
-<small>Created by [Alvaro](http://kanekotic.xom) / [@kanekotic](http://twitter.com/kanekotic)</small>
+<small>Created by [Alvaro](http://kanekotic.xom) ([@kanekotic](http://twitter.com/kanekotic) ) @[Thoughtworks](thoughtworks). For [XConfUnplugged Madrid](https://www.meetup.com/ThoughtWorks-Madrid/events/260566714/)
+</small>
 
 ---
 
-### history
+### history behind
 
 ---
 
 ### what is unit testing?
 
-_In computer programming, unit testing is a software testing method by which individual units of source code, are tested to determine whether they are fit for use._
+_In computer programming, unit testing is a software testing method by which isolated units of source code are tested to determine whether they are fit for use._
 <!-- .element: class="fragment fade-in plain" -->
 
 ---
@@ -356,7 +357,7 @@ describe("Phonebook", () => {
 
 ---
 
-### Their last concern is to know if phone is compatible
+### Their last concern is to know if the phone is compatible
 
 it needs to integrate with external network
  <!-- .element: class="fragment fade-in plain" -->
@@ -436,10 +437,17 @@ describe("when service is up", () => {
 
 _Unit testing is dead, long live development testing_
 
-_nevertheless, everything has a cost_ <!-- .element: class="fragment fade-in plain" -->
+_It's all about diversity, learn from it :)_ <!-- .element: class="fragment fade-in plain" -->
 
 ---
 
-![](resources/testcalm.jpg )   <!-- .element: class="plain" -->
+### Thanks :) 
+
+<small>Github: [@kanekotic](http://github.com/kanekotic)</small>
+
+<small>Twitter: [@kanekotic](http://twitter.com/kanekotic)</small>
+
+<small>Show me the code!: [https://github.com/kanekotic/is-unit-testing-dead](https://github.com/kanekotic/is-unit-testing-dead)</small>
+
 
 

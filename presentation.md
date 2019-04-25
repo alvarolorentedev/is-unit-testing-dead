@@ -9,30 +9,41 @@ embedded: true
 
 <small>Created by [Alvaro](http://kanekotic.xom) / [@kanekotic](http://twitter.com/kanekotic)</small>
 
+---
+
+### history
 
 ---
 
 ### what is unit testing?
 
-_In computer programming, unit testing is a software testing method by which individual units of source code, sets of one or more computer program modules together with associated control data, usage procedures, and operating procedures, are tested to determine whether they are fit for use._
+_In computer programming, unit testing is a software testing method by which individual units of source code, are tested to determine whether they are fit for use._
 <!-- .element: class="fragment fade-in plain" -->
 
 ---
 
-### how do we think unit testing looks like?
+### how do we expect testing to looks like?
 
 ![](resources/pyramid.png )  <!-- .element: class="fragment fade-in plain" -->
 
 ---
 
-<!-- .slide: data-background="./resources/alien.jpg" -->
-### Help an alien get back home 
+### Help aliens get back home after holidays
+
+ ![](resources/alien.jpg)  <!-- .element: class="plain" -->
 
 ---
 
-### Alien first concern is the cost of is call
+### Their first concern is the cost of calling a space cab
 
-0.03/minute, nevertheless if its his home has a discount of 0.2
+\begin{aligned}
+call_{anywhere}= distance  * 0.03 \\
+\end{aligned}
+ <!-- .element: class="fragment fade-in plain" -->
+
+\begin{aligned}
+call_{home}= distance  * 0.03 / 0.2 \\
+\end{aligned}
  <!-- .element: class="fragment fade-in plain" -->
 
 ---
@@ -44,21 +55,20 @@ _In computer programming, unit testing is a software testing method by which ind
 ### Brain power
 
 ```ts
-test("if its home apply discount", () => {
-  expect(cost(1000, true)).toBe(6)
+test("call using normal cost", () => {
+  expect(cost(1000, false)).toBe(30)
 });
 
-test("if its not home dont apply discount", () => {
-  expect(cost(1000, false)).toBe(30)
+test("call home with reduced cost", () => {
+  expect(cost(1000, true)).toBe(6)
 });
 ```
 <!-- .element style="font-size:0.5em;"-->
-<aside class="notes">
-Exactly what you want and expect</aside>
 
 --
 
 ### Is this a good set of inputs?
+
 ```ts
 export function cost(distance: number, isHome: boolean): number {
   return(isHome ? 6 : 30);
@@ -68,24 +78,31 @@ export function cost(distance: number, isHome: boolean): number {
 
 --
 
+### What is the problem?
+
+ - Test does not express intentions
+ <!-- .element: class="fragment fade-in plain" -->
+ - Code is done with a preconception
+ <!-- .element: class="fragment fade-in plain" -->
+
+--
+
 ### Fakers
 
 ```ts
-test("if its home apply discount", () => {
-  const distance = faker.random.number(1000);
-  const result = distance * 0.03 * 0.2;
-  expect(cost(distance, true)).toBe(result);
-});
-
-test("if its not home dont apply discount", () => {
+test("call using normal cost", () => {
   const distance = faker.random.number(1000);
   const result = distance * 0.03;
   expect(cost(distance, false)).toBe(result);
 });
+
+test("call home with reduced cost", () => {
+  const distance = faker.random.number(1000);
+  const result = distance * 0.03 * 0.2;
+  expect(cost(distance, true)).toBe(result);
+});
 ```
-<!-- .element style="font-size:0.5em;"-->
-<aside class="notes">
-Not what you want but what you expect</aside>
+<!-- .element class="fragment fade-in plain" style="font-size:0.5em;"-->
 
 ---
 
@@ -93,47 +110,60 @@ Not what you want but what you expect</aside>
 
 --
 
-### The classical
+### The classic
 
 ```ts
-test("if its home apply discount", () => {
+test("call home with reduced cost", () => {
   const distance = faker.random.number(1000);
+  const isHome = true;
   const result = distance * 0.03 * 0.2;
-  expect(cost(distance, true)).toBe(result);
+  expect(cost(distance, isHome)).toBe(result);
 });
 ```
 <!-- .element style="font-size:0.5em;"-->
 
-<aside class="notes">each tests follows the AAA pattern and more than one assertion is done in each test. What makes it more difficult to understand the specific failure</aside>
+--
+
+### What is the problem?
+
+ - Arrange, Act & Assert are in the same portion of code
+ <!-- .element: class="fragment fade-in plain" -->
+ - Multiple assertions per test, or duplication in tests
+ <!-- .element: class="fragment fade-in plain" -->
 
 --
 
-### The Describe/It pattern 
+### Describe/It 
 
 ```ts
-describe("cost", () => {
-  let result: number;
-  let expected: number;
+describe("call", () => {
+  const distance : number = faker.random.number();
+  let isHome : boolean
 
-  beforeAll(() => {
-    const distance = faker.random.number();
-    expected = distance * 0.03 * 0.2;
-    result = cost(distance, true);
-  });
+  describe("home", () => {
+    let result: number;
+    let expected: number;
 
-  it(`should apply discount`, () => {
-    expect(result).toBe(expected);
+    beforeAll(() => {
+      isHome = true;
+      expected = distance * 0.03 * 0.2;
+      result = cost(distance, isHome);
+    });
+
+    it(`should apply discount`, () => {
+      expect(result).toBe(expected);
+    });
   });
+  //...
 });
 ```
- <!-- .element style="font-size:0.5em;"-->
-<aside class="notes">we can generate multiple levels of definitions to our tests and focus on one assertion at the time, that will allow us to know what is the exact case that makes a functionality fail</aside>
+ <!-- .element class="fragment fade-in plain" style="font-size:0.45em;"-->
 
 ---
 
-### Alien second concern is how to call home
+### Their second concern is how to call home
 
-he will ask a friend because he does not have money
+Ask a friend because they do not have signal
  <!-- .element: class="fragment fade-in plain" -->
 
 --
@@ -155,7 +185,6 @@ class Friends {
 }
 ```
 <!-- .element style="font-size:0.4em;"-->
-<aside class="notes"></aside>
 
 ---
 
@@ -166,12 +195,14 @@ class Friends {
 ### Do it yourself
 
 - simple stubs, complex spy or mock
+ <!-- .element: class="fragment fade-in plain" -->
 - multiple implementations, no setup
+ <!-- .element: class="fragment fade-in plain" -->
 
 --
 
 ```ts
-describe("alien calls using friend", () => {
+describe("alien calls using friend phone", () => {
   it("works because someone answers", () => {
     class mockExtraterrestrialFail extends Extraterrestrial {
         callHome(){
@@ -193,7 +224,6 @@ describe("alien calls using friend", () => {
 });
 ```
 <!-- .element style="font-size:0.4em;"-->
-<aside class="notes"></aside>
 
 --
 
@@ -233,12 +263,11 @@ describe("alien calls using friend", () => {
   });
 });
 ```
-<!-- .element style="font-size:0.4em;"-->
-<aside class="notes"></aside>
+<!-- .element style="font-size:0.3em;"-->
 
 ---
 
-### Alien third concern is remembering his home phone
+### Their third concern is remembering his home phone
 
 needs to find it in his phonebook
  <!-- .element: class="fragment fade-in plain" -->
@@ -254,8 +283,10 @@ needs to find it in his phonebook
 --
 
 ```ts  
-describe("in memory db", () => {
+describe("Phonebook", () => {
   let db: any;
+  const expectedName = faker.random.uuid();
+  const expectedNumber = faker.random.number(100000);
 
   beforeAll(async () => {
     db = new sqlite3.Database(":memory:");
@@ -263,7 +294,7 @@ describe("in memory db", () => {
       db.run("CREATE TABLE phones (name TEXT, phone TEXT)", () => resolve())
     );
     var stmt = db.prepare("INSERT INTO phones VALUES (?,?)");
-    stmt.run("Home","123456");
+    stmt.run(expectedName,expectedNumber);
     
     await new Promise((resolve, reject) => stmt.finalize(() => resolve()));
   });
@@ -273,15 +304,9 @@ describe("in memory db", () => {
   });
 
   it(`should return exisiting user`, async () => {
-    await new Promise((resolve, reject) =>
-      db.each(
-        "SELECT * FROM lorem where name = 'Home'",
-        function(_: any, row: any) {
-          expect(row.phone).toEqual("123456");
-        },
-        () => resolve()
-      )
-    );
+    const phonebook = new Phonebook(":memory:")
+    const cabNumber = await phonebook.getPhoneNumber(expectedName)
+    expect(cabNumber).toEqual(expectedNumber);
   });
 });
 ``` 
@@ -295,19 +320,24 @@ describe("in memory db", () => {
 
 ### Testcontainers
 
+- Use any container functionality (ex. db, service) <!-- .element: class="fragment fade-in plain" -->
+- Manage the container lifecicle and state from the test  <!-- .element: class="fragment fade-in plain" -->
+
 --
 
 ```ts
-describe("DAL", () => {
+describe("Phonebook", () => {
   let container
   let redisClient
+  const expectedName = faker.random.uuid()
+  const expectedNumber = faker.random.number(100000)
   
   beforeAll( async () => {
     container = await new GenericContainer("redis","alpine")
     .withExposedPorts(6379)
     .start();
     redisClient = redis.createClient(`redis://localhost:${container.getMappedPort(6379)}`);
-    await redisClient.set("pepe", "is awesome");
+    await redisClient.set(expectedName, expectedNumber);
   });
 
   afterAll( async () => {
@@ -315,21 +345,20 @@ describe("DAL", () => {
     await container.stop();
   });
 
-  it(`should return exisiting user`, async () => {
-    const dal = new DAL()
-    await dal.connect(`redis://localhost:${container.getMappedPort(6379)}`)
-    const result = await dal.getUser("pepe")
-    expect(result).toEqual("is awesome")
+  it(`should return exisiting phone number`, async () => {
+    const phonebook = new Phonebook(`redis://localhost:${container.getMappedPort(6379)}`)
+    const result = await phonebook.getPhoneNumber("pepe")
+    expect(cabNumber).toEqual(expectedNumber);
   });
 });
 ```
-<!-- .element style="font-size:0.4em;"-->
+<!-- .element style="font-size:0.35em;"-->
 
 ---
 
-### Alien last concern is will the phone work
+### Their last concern is to know if phone is compatible
 
-it needs to integrate with other systems
+it needs to integrate with external network
  <!-- .element: class="fragment fade-in plain" -->
 
 ---
@@ -340,7 +369,7 @@ it needs to integrate with other systems
 
 ### Mountebank
 
-- Allows you to fake services your application interacts with  <!-- .element: class="fragment fade-in plain" -->
+- Allows you to fake services you interact with  <!-- .element: class="fragment fade-in plain" -->
 - setup can be done manually or recorded  <!-- .element: class="fragment fade-in plain" -->
 
 --
@@ -358,7 +387,7 @@ it needs to integrate with other systems
                             "is": {
                                 "statusCode": 200,
                                 "body": {
-                                    "calling":"alien family"
+                                    "calling":"space cab s.a."
                                 }
                             }
                         }
@@ -382,18 +411,16 @@ it needs to integrate with other systems
 --
 
 ```ts
-import { Phone } from "../../src/call";
-
-describe("cost", () => {
+describe("when service is up", () => {
   let phone: Phone;
 
   beforeAll(() => {
     phone = new Phone("http://localhost:4547");
   });
 
-  it(`should apply discount`, async () => {
+  it(`should show whom you are calling`, async () => {
     expect(await phone.call(12345)).toEqual({
-      calling: "alien family"
+      calling: "space cab s.a."
     });
   });
 });
@@ -407,7 +434,9 @@ describe("cost", () => {
 
 ---
 
-_Unit testing is dead, long live unit testing_
+_Unit testing is dead, long live development testing_
+
+_nevertheless, everything has a cost_ <!-- .element: class="fragment fade-in plain" -->
 
 ---
 

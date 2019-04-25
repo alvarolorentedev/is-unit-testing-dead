@@ -1,17 +1,23 @@
 import { cost } from "../../src/cost";
 import faker from "faker";
 
-describe("cost", () => {
-  let result: number;
-  let expected: number;
+describe("call", () => {
+  const distance: number = faker.random.number();
+  let isHome: boolean;
 
-  beforeAll(() => {
-    const distance = faker.random.number();
-    expected = distance * 0.03 * 0.2;
-    result = cost(distance, true);
-  });
+  describe("home", () => {
+    let result: number;
+    let expected: number;
+    
+    beforeAll(() => {
+      isHome = true;
+      expected = distance * 0.03 * 0.2;
+      result = cost(distance, isHome);
+    });
 
-  it(`should apply discount`, () => {
-    expect(result).toBe(expected);
+    it(`should apply discount`, () => {
+      expect(result).toBe(expected);
+    });
   });
+  //...
 });

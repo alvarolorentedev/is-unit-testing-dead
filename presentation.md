@@ -7,7 +7,7 @@ embedded: true
 
 ## is unit testing dead?
 
-<small>Created by [Alvaro](http://kanekotic.xom) ([@kanekotic](http://twitter.com/kanekotic) ) @[Thoughtworks](thoughtworks). For [XConfUnplugged Madrid](https://www.meetup.com/ThoughtWorks-Madrid/events/260566714/)
+<small>Created by [Alvaro](http://kanekotic.xom) ([@kanekotic](http://twitter.com/kanekotic)) @[Thoughtworks](thoughtworks). For [XConfUnplugged Madrid](https://www.meetup.com/ThoughtWorks-Madrid/events/260566714/)
 </small>
 
 ---
@@ -429,15 +429,13 @@ describe("when service is up", () => {
 
 ---
 
-### How testing will really look like?
+### How testing will look like in the future?
 
 ![](resources/honeycomb.png )   <!-- .element: class="fragment fade-in plain" -->
 
 ---
 
-_Unit testing is dead, long live development testing_
-
-_It's all about diversity, learn from it :)_ <!-- .element: class="fragment fade-in plain" -->
+_It's all about diversity, enjoy it :)_ <!-- .element: class="fragment fade-in plain" -->
 
 ---
 

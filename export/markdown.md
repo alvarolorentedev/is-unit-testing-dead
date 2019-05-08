@@ -1,9 +1,3 @@
----
-theme : "night"
-transition: "zoom"
-highlightTheme: "darkula"
-embedded: true
----
 
 ## is unit testing dead?
 
@@ -348,7 +342,7 @@ describe("Phonebook", () => {
 
   it(`should return exisiting phone number`, async () => {
     const phonebook = new Phonebook(`redis://localhost:${container.getMappedPort(6379)}`)
-    const result = await phonebook.getPhoneNumber(expectedName)
+    const result = await phonebook.getPhoneNumber("pepe")
     expect(cabNumber).toEqual(expectedNumber);
   });
 });

@@ -9,6 +9,8 @@ embedded: true
 
 <small>Created by [Alvaro](http://kanekotic.xom) ([@kanekotic](http://twitter.com/kanekotic)) @[Thoughtworks](thoughtworks). For [XConfUnplugged Madrid](https://www.meetup.com/ThoughtWorks-Madrid/events/260566714/)
 </small>
+<small>Remastered by Aleix ([@aleixyz](http://twitter.com/aleixyz)) @[Thoughtworks](thoughtworks). For [XConfUnplugged Barcelona](https://www.meetup.com/ThoughtWorks-Barcelona/events/261476304/)
+</small>
 
 ---
 
@@ -18,7 +20,7 @@ embedded: true
 
 ### what is unit testing?
 
-_In computer programming, unit testing is a software testing method by which isolated units of source code are tested to determine whether they are fit for use._
+_In computer programming, unit testing is a software testing method by which __isolated units__ of source code are tested to determine whether they are fit for use._
 <!-- .element: class="fragment fade-in plain" -->
 
 ---
@@ -26,6 +28,10 @@ _In computer programming, unit testing is a software testing method by which iso
 ### how do we expect testing to looks like?
 
 ![](resources/pyramid.png )  <!-- .element: class="fragment fade-in plain" -->
+
+---
+
+### Real live scenario
 
 ---
 
@@ -109,6 +115,8 @@ test("call home with reduced cost", () => {
 
 ### Test Definitions
 
+Note: The discussion of one assert vs multiple asserts.
+
 --
 
 ### The classic
@@ -171,17 +179,18 @@ Ask a friend because they do not have signal
 
 ```ts
 interface Extraterrestrial {
-    callHome()
-} 
+    callHome(phone: Phone)
+}
 
 class Friends {
     constructor(alien: Extraterrestrial){
         super()
         this.alien = alien
+        this.phone = new Phone()
     }
 
     letPhone(){
-        this.alien.callHome()
+        this.alien.callHome(this.phone)
     }
 }
 ```
@@ -206,7 +215,7 @@ class Friends {
 describe("alien calls using friend phone", () => {
   it("works because someone answers", () => {
     class mockExtraterrestrialFail extends Extraterrestrial {
-        callHome(){
+        callHome(phone: Phone){
         }
     }
     const result = new Friend(new mockExtraterrestrialFail())
@@ -215,7 +224,7 @@ describe("alien calls using friend phone", () => {
 
   it("fails because nobody answers", () => {
     class mockExtraterrestrialFail extends Extraterrestrial {
-        callHome(){
+        callHome(phone: Phone){
             throw("nobody answering")
         }
     }
@@ -273,6 +282,8 @@ describe("alien calls using friend", () => {
 needs to find it in his phonebook
  <!-- .element: class="fragment fade-in plain" -->
 
+Note: Hemos tenido esto antes, pero era bueno de refrescar. Ahora vamos a lo nuevo.
+
 ---
 
 ### In memory databases
@@ -305,7 +316,7 @@ describe("Phonebook", () => {
   });
 
   it(`should return exisiting user`, async () => {
-    const phonebook = new Phonebook(":memory:")
+    const phonebook = new PhonebookRepository(":memory:")
     const cabNumber = await phonebook.getPhoneNumber(expectedName)
     expect(cabNumber).toEqual(expectedNumber);
   });
@@ -347,7 +358,7 @@ describe("Phonebook", () => {
   });
 
   it(`should return exisiting phone number`, async () => {
-    const phonebook = new Phonebook(`redis://localhost:${container.getMappedPort(6379)}`)
+    const phonebook = new PhonebookRepository(`redis://localhost:${container.getMappedPort(6379)}`)
     const result = await phonebook.getPhoneNumber(expectedName)
     expect(cabNumber).toEqual(expectedNumber);
   });
@@ -413,10 +424,10 @@ it needs to integrate with external network
 
 ```ts
 describe("when service is up", () => {
-  let phone: Phone;
+  let phone: PhoneService;
 
   beforeAll(() => {
-    phone = new Phone("http://localhost:4547");
+    phone = new PhoneService("http://localhost:4547");
   });
 
   it(`should show whom you are calling`, async () => {
@@ -431,21 +442,26 @@ describe("when service is up", () => {
 
 ### How testing will look like in the future?
 
-![](resources/honeycomb.png )   <!-- .element: class="fragment fade-in plain" -->
+![](resources/pyramid-q.png )   <!-- .element: class="fragment fade-in plain" -->
 
 ---
 
-_It's all about diversity, enjoy it :)_ <!-- .element: class="fragment fade-in plain" -->
+![](resources/question.png )   <!-- .element: class="fragment fade-in plain" -->
 
 ---
 
-### Thanks :) 
+_The test base should represent the system architecture_ <!-- .element: class="fragment fade-in plain" -->
 
-<small>Github: [@kanekotic](http://github.com/kanekotic)</small>
+---
 
-<small>Twitter: [@kanekotic](http://twitter.com/kanekotic)</small>
+### Next steps?
+
+Keep challenging how we are testing
+
+---
+
+### Thanks :)
+
+<small>Twitter: [@aleixyz](http://twitter.com/aleixyz)</small>
 
 <small>Show me the code!: [https://github.com/kanekotic/is-unit-testing-dead](https://github.com/kanekotic/is-unit-testing-dead)</small>
-
-
-
